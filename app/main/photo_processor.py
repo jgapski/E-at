@@ -17,4 +17,3 @@ class PhotoProcessor:
 
         print(username)
         print(details)
-        pass

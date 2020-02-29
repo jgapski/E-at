@@ -4,16 +4,19 @@ services:
     image: mongo
     restart: always
     ports:
-      - 8081:8081
+      - 27017:27017
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: e_at_db
+    volumes:
+      - ./mongodbdata:/data/db
 
   e_a_app:
     build:
       context: app
     ports:
-      - 8080:5000
+      - 8080:8080
 
     depends_on:
       - e_at_db

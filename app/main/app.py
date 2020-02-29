@@ -76,12 +76,10 @@ def post_photo():
         if 'file' not in request.files:
             return {"result": "Photo expected"}, 400
         file = request.files['file']
-        filepath = os.path.join(app.config['imgdir'], file)
-        file.save(filepath)
-        file = cv2.imread(filepath)
+        cv2.imwrite("image.jpg", file)
+        file = cv2.imread("image.jpg")
 
         photo_processor.main_alg(username, file)
-        os.remove(filepath)
         return {"result": "Success"}, 200
 
     except ValueError as error:

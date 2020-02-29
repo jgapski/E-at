@@ -25,7 +25,7 @@ class UserRepository:
 
     def check_token(self, token):
         users = self.user_collection.find({"token": token})
-        if users.count() < 0:
+        if users.count() == 0:
             raise ValueError("Invalid token")
         else:
             return users[0]["username"]

@@ -12,7 +12,7 @@ services:
     volumes:
       - ./mongodbdata:/data/db
 
-  e_a_app:
+  e_at_app:
     build:
       context: app
     ports:

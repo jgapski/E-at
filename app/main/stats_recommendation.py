@@ -1,11 +1,42 @@
 from datetime import datetime, timedelta
 import functools
-import operator
-
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 class StatsRecommendation():
     def __init__(self):
         self.conn = "conn"
+
+    def render(self, history):
+        history_stats = list(map(lambda x: x['stats'], history))
+        hist_size = len(history_stats)
+        calories = list(map(lambda x: x['calories'], history_stats))
+        fat = list(map(lambda x: x['fat'], history_stats))
+        carbs = list(map(lambda x: x['carbs'], history_stats))
+        protein = list(map(lambda x: x['protein'], history_stats))
+        fiber = list(map(lambda x: x['fiber'], history_stats))
+
+        plt.figure(figsize=(4, 20))
+
+        plt.subplot(5, 1, 1)
+        plt.title('calories')
+        sns.lineplot(range(0, hist_size), calories)
+        plt.subplot(5, 1, 2)
+        plt.title('fat')
+        sns.lineplot(range(0, hist_size), fat)
+        plt.subplot(5, 1, 3)
+        plt.title('carbs')
+        sns.lineplot(range(0, hist_size), carbs)
+        plt.subplot(5, 1, 4)
+        plt.title('protein')
+        sns.lineplot(range(0, hist_size), protein)
+        plt.subplot(5, 1, 5)
+        plt.title('fiber')
+        sns.lineplot(range(0, hist_size), fiber)
+
+        plt.savefig("nt_plots.jpg")
 
     def create_recommendations(self, history):
         last_24_h_history = self.filter_last_24_h(history)

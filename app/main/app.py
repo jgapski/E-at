@@ -5,6 +5,7 @@ from flask import request
 from photo_processor import PhotoProcessor
 from repository.statistics_repository import StatisticsRepository
 from repository.user_repository import UserRepository
+from stats_recommendation import StatsRecommendation
 
 app = Flask("E-AT")
 mongo_client = pymongo.MongoClient(
@@ -52,12 +53,17 @@ def logout():
         return {"result": str(err)}, 500
 
 
-@app.route('/statistics', methods=['GET'])
+@app.route('/recommendations', methods=['GET'])
 def get_statistics():
     try:
         token = request.headers.get('e_at_token')
         username = user_repository.check_token(token)
-        return jsonify(stats_repository.find_for_user(username))
+        recommendations = StatsRecommendation().create_recommendations(username)
+        result = {
+
+            'recommendations': recommendations
+        }
+        return jsonify(result)
     except ValueError as error:
         return {"result": str(error)}, 400
     except Exception as err:
@@ -73,6 +79,7 @@ def post_photo():
             return {"result": "Photo expected"}, 400
         file = request.files['file']
         photo_processor.main_alg(username, file)
+        # TODO classify picture and put the nutrition results into database
         return {"result": "Success"}, 200
 
     except ValueError as error:

@@ -1,3 +1,4 @@
+import copy
 import os
 import traceback
 
@@ -6,9 +7,11 @@ import cv2
 import pymongo
 from flask import Flask, jsonify
 from flask import request
+from flask import send_file
 from photo_processor import PhotoProcessor
 from repository.statistics_repository import StatisticsRepository
 from repository.user_repository import UserRepository
+from stats_recommendation import StatsRecommendation
 
 app = Flask("E-AT")
 mongo_client = pymongo.MongoClient(
@@ -61,7 +64,14 @@ def get_statistics():
     try:
         token = request.headers.get('e_at_token')
         username = user_repository.check_token(token)
-        return jsonify(stats_repository.find_for_user(username)), 200
+        history = stats_repository.find_for_user(username)
+        recommendations = StatsRecommendation().create_recommendations(copy.deepcopy(history))
+        result = {
+            'recommendations': recommendations,
+            'history': history
+        }
+        return jsonify(result), 200
+
     except ValueError as error:
         return {"result": str(error)}, 400
     except Exception as err:
@@ -89,6 +99,18 @@ def post_photo():
         traceback.print_tb(err)
         return {"result": str(err)}, 500
 
+@app.route('/get_image')
+def get_image():
+    try:
+        token = request.headers.get('e_at_token')
+        username = user_repository.check_token(token)
+        history = stats_repository.find_for_user(username)
+        StatsRecommendation().render(history)
+        return send_file("nt_plots.jpg", mimetype='image/jpeg'), 200
+    except ValueError as error:
+        return {"result": str(error)}, 400
+    except Exception as err:
+        return {"result": str(err)}, 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)

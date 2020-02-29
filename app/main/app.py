@@ -7,7 +7,7 @@ from flask import request
 from photo_processor import PhotoProcessor
 from repository.statistics_repository import StatisticsRepository
 from repository.user_repository import UserRepository
-import numpy as np
+import os
 
 
 app = Flask("E-AT")
@@ -75,9 +75,13 @@ def post_photo():
         username = user_repository.check_token(token)
         if 'file' not in request.files:
             return {"result": "Photo expected"}, 400
-        file = request.files['file'].read()
-        file = np.fromstring(file, np.uint8)
+        file = request.files['file']
+        filepath = os.path.join(app.config['imgdir'], file)
+        file.save(filepath)
+        file = cv2.imread(filepath)
+
         photo_processor.main_alg(username, file)
+        os.remove(filepath)
         return {"result": "Success"}, 200
 
     except ValueError as error:

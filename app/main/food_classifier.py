@@ -21,7 +21,6 @@ class FoodClassifier():
 
     def predict(self, image):
         K.clear_session()
-        image = cv2.imdecode(image, cv2.CV_LOAD_IMAGE_UNCHANGED)
         image = image[..., ::-1]
         image = cv2.resize(image, (200, 200))
         image = image.reshape(-1, 200, 200, 3)

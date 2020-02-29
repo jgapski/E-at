@@ -1,13 +1,14 @@
-from flask import Flask
-import cv2
+import os
+import traceback
+
 import config
+import cv2
 import pymongo
 from flask import Flask, jsonify
 from flask import request
 from photo_processor import PhotoProcessor
 from repository.statistics_repository import StatisticsRepository
 from repository.user_repository import UserRepository
-
 
 app = Flask("E-AT")
 mongo_client = pymongo.MongoClient(
@@ -60,7 +61,7 @@ def get_statistics():
     try:
         token = request.headers.get('e_at_token')
         username = user_repository.check_token(token)
-        return jsonify(stats_repository.find_for_user(username))
+        return jsonify(stats_repository.find_for_user(username)), 200
     except ValueError as error:
         return {"result": str(error)}, 400
     except Exception as err:
@@ -75,12 +76,17 @@ def post_photo():
         if 'file' not in request.files:
             return {"result": "Photo expected"}, 400
         file = request.files['file']
-        photo_processor.main_alg(username, file)
+        filepath = "image.jpg"
+        file.save(filepath)
+        file_img = cv2.imread(filepath)
+        photo_processor.main_alg(username, file_img)
+        os.remove(filepath)
         return {"result": "Success"}, 200
 
     except ValueError as error:
         return {"result": str(error)}, 400
     except Exception as err:
+        traceback.print_tb(err)
         return {"result": str(err)}, 500
 
 

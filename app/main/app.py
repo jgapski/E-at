@@ -7,6 +7,7 @@ from flask import request
 from photo_processor import PhotoProcessor
 from repository.statistics_repository import StatisticsRepository
 from repository.user_repository import UserRepository
+import numpy as np
 
 
 app = Flask("E-AT")
@@ -74,7 +75,8 @@ def post_photo():
         username = user_repository.check_token(token)
         if 'file' not in request.files:
             return {"result": "Photo expected"}, 400
-        file = request.files['file']
+        file = request.files['file'].read()
+        file = np.fromstring(file, np.uint8)
         photo_processor.main_alg(username, file)
         return {"result": "Success"}, 200
 

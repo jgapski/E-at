@@ -3,7 +3,7 @@ from keras.models import load_model
 
 class FoodClassifier():
     def __init__(self):
-        self.model = load_model("C:/Users/Efe/Documents/GitHub/E-at/app/tensorflow_models/food_detector_model.h5")   ## this is a placeholder hardcode
+        self.model = load_model("../tensorflow_models/food_detector_model.h5")
 
     def decode_prediction(self, class_id):
         class_dict = {

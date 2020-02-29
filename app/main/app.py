@@ -8,6 +8,7 @@ from photo_processor import PhotoProcessor
 from repository.statistics_repository import StatisticsRepository
 from repository.user_repository import UserRepository
 import os
+import traceback
 
 
 app = Flask("E-AT")
@@ -85,6 +86,7 @@ def post_photo():
     except ValueError as error:
         return {"result": str(error)}, 400
     except Exception as err:
+        traceback.print_tb(err)
         return {"result": str(err)}, 500
 
 

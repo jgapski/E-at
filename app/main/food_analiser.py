@@ -18,7 +18,7 @@ class FoodAnaliser:
             "calories": self.get_calories(foodPage),
             "fat": self.get_fat(foodPage),
             "carbs": self.get_carbs(foodPage),
-            "protin": self.get_protin(foodPage),
+            "protein": self.get_protein(foodPage),
             "fiber": self.get_fiber(foodPage)
         }
 
@@ -47,7 +47,7 @@ class FoodAnaliser:
     def get_fiber(self, foodPage):
         return self.get_ingredient('Fiber', foodPage)
 
-    def get_protin(self, foodPage):
+    def get_protein(self, foodPage):
         return self.get_ingredient('Protein', foodPage)
 
     def get_ingredient(self, ingredient, foodPage):

@@ -18,17 +18,17 @@ class StatsRecommendation():
             'calories': 2000,
             'fat': 70,
             'carbs': 270,
-            'protin': 50,
+            'protein': 50,
             'fiber': 25
         }
 
     def do_recommendations(self, accumulated):
         recommendations = []
-        if accumulated['calories'] > self.guideline_daily_amount()['calories']:
-            recommendations.append('You eat too many calories already!')
-        else:
-            recommendations.append('You need to eat more.')
-        # TODO add more recomendations
+        for nutrsioan in self.guideline_daily_amount().keys():
+            if accumulated[nutrsioan] > self.guideline_daily_amount()[nutrsioan]:
+                recommendations.append('You eat too many '+ str(nutrsioan) +' already!')
+            else:
+                recommendations.append('You should consume more ' + str(nutrsioan))
         return recommendations
 
     def f(self, meal):
@@ -46,6 +46,6 @@ class StatsRecommendation():
         a['calories'] += b['calories']
         a['fat'] += b['fat']
         a['carbs'] += b['carbs']
-        a['protin'] += b['protin']
+        a['protein'] += b['protein']
         a['fiber'] += b['fiber']
         return a

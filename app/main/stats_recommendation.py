@@ -33,7 +33,7 @@ class StatsRecommendation():
 
     def f(self, meal):
         last_hour_date_time = datetime.now() - timedelta(hours=24)
-        return meal['timestamp'] > last_hour_date_time
+        return meal['timestamp'] > datetime.timestamp(last_hour_date_time)
 
     def filter_last_24_h(self, history):
         return filter(lambda x: self.f(x), history)

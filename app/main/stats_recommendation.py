@@ -39,7 +39,8 @@ class StatsRecommendation():
         return filter(lambda x: self.f(x), history)
 
     def accumulate(self, last_24_h_history):
-        return functools.reduce(lambda x, y: self.add(x, y), last_24_h_history)
+        history_stats = map(lambda x:x['stats'], last_24_h_history)
+        return functools.reduce(lambda x, y: self.add(x, y), history_stats)
 
     def add(self, a, b):
         a['calories'] += b['calories']

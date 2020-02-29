@@ -1,3 +1,4 @@
+import copy
 import os
 import traceback
 
@@ -10,7 +11,6 @@ from photo_processor import PhotoProcessor
 from repository.statistics_repository import StatisticsRepository
 from repository.user_repository import UserRepository
 from stats_recommendation import StatsRecommendation
-
 
 app = Flask("E-AT")
 mongo_client = pymongo.MongoClient(
@@ -63,9 +63,8 @@ def get_statistics():
     try:
         token = request.headers.get('e_at_token')
         username = user_repository.check_token(token)
-        #return jsonify(stats_repository.find_for_user(username)), 200
         history = stats_repository.find_for_user(username)
-        recommendations = StatsRecommendation().create_recommendations(history)
+        recommendations = StatsRecommendation().create_recommendations(copy.deepcopy(history))
         result = {
             'recommendations': recommendations,
             'history': history

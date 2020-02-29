@@ -1,6 +1,4 @@
 import os
-
-import cv2
 import traceback
 
 import config
@@ -63,7 +61,7 @@ def get_statistics():
     try:
         token = request.headers.get('e_at_token')
         username = user_repository.check_token(token)
-        return jsonify(stats_repository.find_for_user(username))
+        return jsonify(stats_repository.find_for_user(username)), 200
     except ValueError as error:
         return {"result": str(error)}, 400
     except Exception as err:

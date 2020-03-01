@@ -5,7 +5,8 @@ import traceback
 import config
 import cv2
 import pymongo
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
+from flask import make_response, redirect
 from flask import request
 from flask import send_file
 from photo_processor import PhotoProcessor
@@ -13,7 +14,7 @@ from repository.statistics_repository import StatisticsRepository
 from repository.user_repository import UserRepository
 from stats_recommendation import StatsRecommendation
 
-app = Flask("E-AT")
+app = Flask("E-AT", template_folder='/app/main/templates')
 mongo_client = pymongo.MongoClient(
     'mongodb://%s:%s@%s:27017' % (config.database_user, config.database_password, config.database_host))
 user_repository = UserRepository(mongo_client['e_at_db'])
@@ -44,7 +45,6 @@ def login():
         return {"result": str(error)}, 400
     except Exception as err:
         return {"result": str(err)}, 500
-
 
 @app.route('/logout', methods=['POST'])
 def logout():
@@ -99,6 +99,7 @@ def post_photo():
         traceback.print_tb(err)
         return {"result": str(err)}, 500
 
+
 @app.route('/get_image')
 def get_image():
     try:
@@ -111,6 +112,55 @@ def get_image():
         return {"result": str(error)}, 400
     except Exception as err:
         return {"result": str(err)}, 500
+
+
+@app.route('/login_web', methods=['POST'])
+def login_web():
+    try:
+        username = request.form.get('username')
+        password = request.form.get('password')
+        user_repository.check_user(username, password)
+        history = stats_repository.find_for_user(username)
+
+
+        StatsRecommendation().render_plot('calories', history)
+
+        return render_template('stats.html', username=username), 200
+    except ValueError as error:
+        return {"result": str(error)}, 400
+    except Exception as err:
+        return {"result": str(err)}, 500
+
+
+@app.route('/calories')
+def calories():
+    try:
+        return send_file("calories.jpg", mimetype='image/jpeg'), 200
+    except ValueError as error:
+        return {"result": str(error)}, 400
+    except Exception as err:
+        return {"result": str(err)}, 500
+
+
+@app.route('/postImage_web', methods=['POST'])
+def post_photo_web():
+    try:
+        username = 'ksu4' #request.form.get('username')
+
+        history = stats_repository.find_for_user(username)
+        recommendations = StatsRecommendation().create_recommendations(copy.deepcopy(history))
+
+        return render_template('recc.html', recommendations=recommendations)
+
+    except ValueError as error:
+        return {"result": str(error)}, 400
+    except Exception as err:
+        traceback.print_tb(err)
+        return {"result": str(err)}, 500
+
+@app.route('/')
+def hello():
+    return render_template('index.html')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)

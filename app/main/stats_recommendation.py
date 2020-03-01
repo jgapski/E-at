@@ -36,7 +36,20 @@ class StatsRecommendation():
         plt.title('fiber')
         sns.lineplot(range(0, hist_size), fiber)
 
+        plt.tight_layout()
         plt.savefig("nt_plots.jpg")
+
+    def render_plot(self, param, history):
+        history_stats = list(map(lambda x: x['stats'], history))
+        hist_size = len(history_stats)
+        data = list(map(lambda x: x[param], history_stats))
+
+        sns.lineplot(range(0, hist_size), data)
+        plot_name = param + '.jpg'
+
+        plt.savefig(plot_name)
+        return plot_name
+
 
     def create_recommendations(self, history):
         last_24_h_history = self.filter_last_24_h(history)

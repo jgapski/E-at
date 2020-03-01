@@ -9,11 +9,11 @@ class FoodClassifier():
 
     def decode_prediction(self, class_id):
         class_dict = {
-            0: "pasta",
+            4: "pasta",
             1: "donut",
-            2: "fries",
-            3: "apple",
-            4: "pizza",
+            3: "fries",
+            0: "apple",
+            2: "pizza",
             5: "salad"
         }
 
@@ -24,6 +24,7 @@ class FoodClassifier():
         image = image[..., ::-1]
         image = cv2.resize(image, (200, 200))
         image = image.reshape(-1, 200, 200, 3)
+        image = image * (1./255)
 
         graph = tf.get_default_graph()
 
